@@ -1,10 +1,13 @@
 Star [] galaxy;
 Space [] ichi;
+public float timeSurvived = 0.0;
+public float finishedTime;
 
 interface Space
 {
-  //All the mutators,retrievers, and move/show functions are already defined in the abstract class
-  //Floater. All Floaters use them; therefore the interface for all Floaters contains these functions.  
+  //All the mutators,retrievers, and move/show functions are already defined
+  //in the abstract class Floater. All Floaters use them; therefore the
+  //interface for all Floaters contains these functions.  
   public void setX(int x);
   public int getX();
 
@@ -103,6 +106,26 @@ public void draw()
   // //Move and show the SpaceShip.
   ichi[ichi.length-1].move();
   ichi[ichi.length-1].show();
+
+  //Display how long the player has survived in seconds.
+  if( ((SpaceShip)ichi[ichi.length-1]).getCrash() == false)
+  {
+    fill(255,0,0);
+    textSize(12);
+    text("Time survived so far: " + ((int)((timeSurvived/60)*10))/10.0 + "s",435,585);
+
+    timeSurvived+=1.0;
+  }
+
+  //Once the "New Game?" screen turns up, display how long the player survived.
+  else if(//((SpaceShip)ichi[ichi.length-1]).getCrash() == true &&
+          ((SpaceShip)ichi[ichi.length-1]).getGame() == true)
+  {
+    finishedTime = ((int)((timeSurvived/60)*10))/10.0;
+    fill(255,0,0);
+    textSize(18);
+    text("You survived for " + finishedTime + " seconds", 185,235);
+  }
 }
 
 public void keyPressed()
@@ -117,7 +140,7 @@ public void keyPressed()
     if(key == 'w' || (key == CODED && keyCode == UP)) { ((SpaceShip)ichi[ichi.length-1]).accelerate(0.1); }
     if(key == 's' || (key == CODED && keyCode == DOWN)) { ((SpaceShip)ichi[ichi.length-1]).accelerate(-0.1); }
 
-    //Hyperspace (no animation)
+    //Hyperspace (no animation applicable)
     if(key == 'q')
     {
       ((SpaceShip)ichi[ichi.length-1]).setPointDirection((int)(Math.random()*360));
@@ -133,21 +156,28 @@ public void keyPressed()
 
 public void mousePressed()
 {
+  //ONLY run this code if the player has crashed and the "New Game?" message has appeared.
   if(((SpaceShip)ichi[ichi.length-1]).getGame() == true)
   {
-    if(mouseX > 215 && mouseX < 270 && mouseY > 325 && mouseY < 350)
+    if(mouseY > 325 && mouseY < 350)
     {
-      for(int i = 0; i < ichi.length; i++)
+      //The player clicks on "Yes". Code is run to "reset" the game to its initial state.
+      if(mouseX > 215 && mouseX < 270)
       {
-        ichi[i].reset();
+        for(int i = 0; i < ichi.length; i++)
+        {
+          ichi[i].reset();
+        }
+        timeSurvived = 0.0;
       }
-      ((SpaceShip)ichi[ichi.length-1]).setGame(false);
-    }
-    if(mouseX > 340 && mouseX < 390 && mouseY > 325 && mouseY < 350)
-    {
-      background(0);
-      ((SpaceShip)ichi[ichi.length-1]).setGame(false);
-      noLoop();
+
+      //The player clicks on "No". The game "shuts down" with a black screen.
+      if(mouseX > 340 && mouseX < 390)
+      {
+        background(0);
+        ((SpaceShip)ichi[ichi.length-1]).setGame(false);
+        noLoop();
+      }
     }
   }
 }
@@ -235,6 +265,7 @@ class SpaceShip extends Floater implements Space
         crashed = false;
         explodeRange = 0;
 
+        //newgame stuff
         timeCounter = 0;
         newGame = false;
     }
@@ -243,9 +274,11 @@ class SpaceShip extends Floater implements Space
     public void setCrash(boolean crash) { crashed = crash; }
     public boolean getCrash() { return crashed; }
 
+    //Setters and getters for prepping for a new game.
     public void setGame(boolean game) { newGame = game; }
     public boolean getGame() { return newGame; }
 
+    //Resets the spaceship to its initial state for a new game.
     public void reset()
     {
       myCenterX = (int)width/2;
@@ -260,12 +293,14 @@ class SpaceShip extends Floater implements Space
       explodeRange = 0;
 
       timeCounter = 0;
+      newGame = false;
     }
 
     public void show ()  //Draws the floater at the current position  
     {
       if(crashed)
       {
+        //Stop the ship from moving once it's crashed.
         myDirectionX = 0;
         myDirectionY = 0;
 
@@ -339,7 +374,6 @@ class SpaceShip extends Floater implements Space
         endShape(CLOSE);
       }
     }
-
 } //
 
 //-----------------------------------------------------------------------------------------------------
@@ -386,8 +420,18 @@ class Asteroid extends Floater implements Space
     myColor = color(210,210,210);
 
     //coordinates
-    myCenterX = (int)(Math.random()*width);
-    myCenterY = (int)(Math.random()*height);
+    if(Math.random()>0.5)
+    {
+      myCenterX = (int)(Math.random()*width);
+      myCenterY = 0;
+    }
+    else
+    {
+      myCenterX = 0;
+      myCenterY = (int)(Math.random()*height);
+    }
+    // myCenterX = (int)(Math.random()*width);
+    // myCenterY = (int)(Math.random()*height);
 
     myDirectionX = Math.random();
     myDirectionY = Math.random();
