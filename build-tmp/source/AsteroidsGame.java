@@ -139,8 +139,8 @@ public void draw()
   {
     finishedTime = ((int)((timeSurvived/60)*10))/10.0f;
     fill(255,0,0);
-    textSize(18);
-    text("You survived for " + finishedTime + " seconds", 185,235);
+    textSize(20);
+    text("You survived for " + finishedTime + " seconds", 170,235);
   }
 }
 
@@ -400,7 +400,7 @@ class Asteroid extends Floater implements Space
   
   public Asteroid()
   {
-    rotSpeed = (int)(Math.random()*2)+1;
+    rotSpeed = (int)(Math.random()*5)-2;
 
     //Initializes the asteroid's corners
     corners = 8;
@@ -449,19 +449,30 @@ class Asteroid extends Floater implements Space
     // myCenterX = (int)(Math.random()*width);
     // myCenterY = (int)(Math.random()*height);
 
-    myDirectionX = Math.random();
-    myDirectionY = Math.random();
+    myDirectionX = (Math.random()*2)-1;
+    myDirectionY = (Math.random()*2)-1;
 
     myPointDirection = (int)(Math.random()*360);
   }
 
   public void reset()
   {
-    rotSpeed = (int)(Math.random()*2)+1;
-    myCenterX = (int)(Math.random()*width);
-    myCenterY = (int)(Math.random()*height);
-    myDirectionX = Math.random();
-    myDirectionY = Math.random();
+    myColor = color(210,210,210);
+
+    if(Math.random()>0.5f)
+    {
+      myCenterX = (int)(Math.random()*width);
+      myCenterY = 0;
+    }
+    else
+    {
+      myCenterX = 0;
+      myCenterY = (int)(Math.random()*height);
+    }
+
+    myDirectionX = (Math.random()*2)-1;
+    myDirectionY = (Math.random()*2)-1;
+
     myPointDirection = (int)(Math.random()*360);
   }
 
@@ -472,7 +483,6 @@ class Asteroid extends Floater implements Space
   }
 
 } //
-
 
 //----------------------------------------------------------------------------------------
 //An abstract class that contains variables and functions for other classes to inherit.
