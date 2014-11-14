@@ -1,5 +1,13 @@
-Star [] galaxy;
-Space [] ichi;
+//import java.util.*;
+
+private Star [] galaxy;
+private ArrayList <Space> ichi;
+private ArrayList <Bullet> ni;
+
+public int score = 0;
+
+public int textColor = color(255,0,0);
+
 public float timeSurvived = 0.0;
 public float finishedTime;
 
@@ -34,39 +42,25 @@ public void setup()
   size(600,600);
   background(0);
 
-  //This is an array for all floaters. In it are asteroids and only one SpaceShip; this spaceship is
-  //drawn last. on top of everything else. This is why its number is length-1.
-  ichi = new Space[11];
-  for(int s = 0; s < ichi.length; s++)
+  //This is an ArrayList for all floaters. In it are asteroids and only one SpaceShip;
+  //this spaceship is drawn last on top of everything else.
+  //This is why its number is size-1.
+  ichi = new ArrayList <Space>();
+
+  for(int s = 0; s < 11; s++)
   {
-    if(s == ichi.length-1)
+    if(s == 11-1)
     {
-      ichi[s] = new SpaceShip();
+      ichi.add(new SpaceShip());
     }
     else
     {
-      ichi[s] = new Asteroid();  
+      ichi.add(new Asteroid());
     }
   }
 
-  //Make sure no asteroids are too close to the spaceship so that you don't crash and die immediately.
-  //Do this by comparing each asteroid's x/y coordinates with the ship's (using distance),
-  //and changing the position of the asteroid if it is too close.
-  //The problem is that it only runs this code once, so if the asteroid is again too close to the ship,
-  //you will still crash right away.
-
-  for(int s = 0; s < ichi.length-1; s++)
-  {
-    if(dist(
-      ichi[ichi.length-1].getX(),ichi[ichi.length-1].getY(),
-      ichi[s].getX(),ichi[s].getY()
-      ) < 60
-      )
-    {
-      ichi[s].setX((int)(Math.random()*width));
-      ichi[s].setY((int)(Math.random()*height));
-    }
-  }
+  //Separate ArrayList for Bullets.
+  ni = new ArrayList <Bullet>();
 
   //Create an array of background stars.
   galaxy = new Star[400];
@@ -88,94 +82,160 @@ public void draw()
 
   //Move and show the asteroids.
   //Crash the ship if the asteroid is less than 25 units away from the ship.
-  for(int i = 0; i < ichi.length-1; i++)
+  for(int i = 0; i < ichi.size()-1; i++)
   {
-    ichi[i].move();
-    ichi[i].show();
+    ichi.get(i).move();
+    ichi.get(i).show();
 
     if(dist(
-      ichi[i].getX(),ichi[i].getY(),
-      ichi[ichi.length-1].getX(),ichi[ichi.length-1].getY()
+      ichi.get(i).getX(),ichi.get(i).getY(),
+      ichi.get(ichi.size()-1).getX(),ichi.get(ichi.size()-1).getY()
            ) < 25
       )
     {
-      ((SpaceShip)ichi[ichi.length-1]).setCrash(true);
+      ((SpaceShip)ichi.get(ichi.size()-1)).setCrash(true);
+    }
+
+    for(int a = 0; a < ni.size(); a++)
+    {
+      //Remove an asteroid if the bullet is close enough ("hits").
+      //Remove the bullet as well.
+      if(dist(
+      ichi.get(i).getX(),ichi.get(i).getY(),
+      ni.get(a).getX(),ni.get(a).getY()
+             ) < 25
+        )
+      {
+        //20 points for big asteroid, 50 for small.
+        score+=20;
+        // if(ichi.get(i) instanceof Asteroid && !(ichi.get(i) instanceof smallAsteroid))
+        // {
+        //   ichi.add(new smallAsteroid((Asteroid) ichi.get(i)) );
+
+        //   ichi.add(new smallAsteroid((Asteroid) ichi.get(i+1)) );
+
+        //   ichi.remove(i+2);
+        // }
+        // else { ichi.remove(i); }
+        ichi.remove(i);
+        ni.remove(a);
+
+      }
+    }
+
+  }
+  
+  if(((SpaceShip)ichi.get(ichi.size()-1)).getCrash() == false)
+  {
+    for(int a = 0; a < ni.size(); a++)
+    {
+      //Remove the bullet from the ArrayList if it goes offscreen.
+      ni.get(a).move();
+      if(
+        (ni.get(a).getX() < 0 || ni.get(a).getX() > width) &&
+        (ni.get(a).getY() < 0 || ni.get(a).getY() > height)
+        )
+      {
+        ni.remove(a);
+      }
+      else
+      {
+       ni.get(a).show();
+      }
     }
   }
 
-  // //Move and show the SpaceShip.
-  ichi[ichi.length-1].move();
-  ichi[ichi.length-1].show();
+  //Move and show the SpaceShip.
+  ichi.get(ichi.size()-1).move();
+  ichi.get(ichi.size()-1).show();
+  
 
+  //If the player has not crashed:
   //Display how long the player has survived in seconds.
-  if( ((SpaceShip)ichi[ichi.length-1]).getCrash() == false)
+  if( ((SpaceShip)ichi.get(ichi.size()-1)).getCrash() == false)
   {
-    fill(255,0,0);
-    textSize(12);
-    text("Time survived so far: " + ((int)((timeSurvived/60)*10))/10.0 + "s",435,585);
+    fill(textColor);
+    textSize(14);
+    text("Time survived so far: " + ((int)((timeSurvived/60)*10))/10.0 + "s",400,590);
 
     timeSurvived+=1.0;
   }
 
   //Once the "New Game?" screen turns up, display how long the player survived.
-  else if(//((SpaceShip)ichi[ichi.length-1]).getCrash() == true &&
-          ((SpaceShip)ichi[ichi.length-1]).getGame() == true)
+  else if( ((SpaceShip)ichi.get(ichi.size()-1)).getGame() == true)
   {
     finishedTime = ((int)((timeSurvived/60)*10))/10.0;
-    fill(255,0,0);
+    fill(textColor);
     textSize(20);
-    text("You survived for " + finishedTime + " seconds", 170,235);
+    text("You survived for " + finishedTime + " seconds", 155,235);
+    text("You scored " + score + " points",195,210);
   }
 }
 
-public void keyPressed()
+public void keyPressed() //Spaceship movement
 {
-  if(((SpaceShip)ichi[ichi.length-1]).getCrash() == false)
+  if(((SpaceShip)ichi.get(ichi.size()-1)).getCrash() == false)
   {
     //Rotate left/right
-    if(key == 'a' || (key == CODED && keyCode == LEFT)) { ((SpaceShip)ichi[ichi.length-1]).rotate(-5); }
-    if(key == 'd' || (key == CODED && keyCode == RIGHT)) { ((SpaceShip)ichi[ichi.length-1]).rotate(5); }
+    if(key == 'a' || (key == CODED && keyCode == LEFT)) { ((SpaceShip)ichi.get(ichi.size()-1)).rotate(-5); }
+    if(key == 'd' || (key == CODED && keyCode == RIGHT)) { ((SpaceShip)ichi.get(ichi.size()-1)).rotate(5); }
 
     //Accelerate/decelerate
-    if(key == 'w' || (key == CODED && keyCode == UP)) { ((SpaceShip)ichi[ichi.length-1]).accelerate(0.1); }
-    if(key == 's' || (key == CODED && keyCode == DOWN)) { ((SpaceShip)ichi[ichi.length-1]).accelerate(-0.1); }
+    if(key == 'w' || (key == CODED && keyCode == UP)) { ((SpaceShip)ichi.get(ichi.size()-1)).accelerate(0.1); }
+    if(key == 's' || (key == CODED && keyCode == DOWN)) { ((SpaceShip)ichi.get(ichi.size()-1)).accelerate(-0.1); }
 
     //Hyperspace (no animation applicable)
     if(key == 'q')
     {
-      ((SpaceShip)ichi[ichi.length-1]).setPointDirection((int)(Math.random()*360));
+      ((SpaceShip)ichi.get(ichi.size()-1)).setPointDirection((int)(Math.random()*360));
 
-      ((SpaceShip)ichi[ichi.length-1]).setDirectionX(0);
-      ((SpaceShip)ichi[ichi.length-1]).setDirectionY(0);
+      ((SpaceShip)ichi.get(ichi.size()-1)).setDirectionX(0);
+      ((SpaceShip)ichi.get(ichi.size()-1)).setDirectionY(0);
 
-      ((SpaceShip)ichi[ichi.length-1]).setX((int)(Math.random()*width));
-      ((SpaceShip)ichi[ichi.length-1]).setY((int)(Math.random()*height));
+      ((SpaceShip)ichi.get(ichi.size()-1)).setX((int)(Math.random()*width));
+      ((SpaceShip)ichi.get(ichi.size()-1)).setY((int)(Math.random()*height));
+    }
+
+    if(key == ' ' )
+    {
+      ni.add(new Bullet( (SpaceShip)ichi.get(ichi.size()-1)));
     }
   }
+
+  // if(key == 'f')
+  // {
+  //   timeSurvived+=60;
+  // }
 }
 
-public void mousePressed()
+public void mousePressed() //ONLY for New Game
 {
   //ONLY run this code if the player has crashed and the "New Game?" message has appeared.
-  if(((SpaceShip)ichi[ichi.length-1]).getGame() == true)
+  if(((SpaceShip)ichi.get(ichi.size()-1)).getGame() == true)
   {
     if(mouseY > 325 && mouseY < 350)
     {
       //The player clicks on "Yes". Code is run to "reset" the game to its initial state.
       if(mouseX > 215 && mouseX < 270)
       {
-        for(int i = 0; i < ichi.length; i++)
+        for(int i = 0; i < ichi.size(); i++)
         {
-          ichi[i].reset();
+          ichi.get(i).reset();
         }
         timeSurvived = 0.0;
+
+        int resetAsteroids = 11-ichi.size()-1;
+        for(int i = 0; i < resetAsteroids; i++)
+        {
+          ichi.add(new Asteroid());
+        }
       }
 
       //The player clicks on "No". The game "shuts down" with a black screen.
       if(mouseX > 340 && mouseX < 390)
       {
         background(0);
-        ((SpaceShip)ichi[ichi.length-1]).setGame(false);
+        ((SpaceShip)ichi.get(ichi.size()-1)).setGame(false);
         noLoop();
       }
     }
@@ -296,7 +356,7 @@ class SpaceShip extends Floater implements Space
       newGame = false;
     }
 
-    public void show ()  //Draws the floater at the current position  
+    public void show()  //Draws the floater at the current position  
     {
       if(crashed)
       {
@@ -336,7 +396,7 @@ class SpaceShip extends Floater implements Space
           if(timeCounter > 90)
           {
             newGame = true;
-            fill(255,0,0);
+            fill(textColor);
             textSize(50);
             text("PLAY AGAIN?",150,300);
 
@@ -346,7 +406,7 @@ class SpaceShip extends Floater implements Space
           }
           else
           {
-            fill(255,0,0);
+            fill(textColor);
             textSize(50);
             text("GAME OVER",150,300);
             timeCounter++;
@@ -376,15 +436,62 @@ class SpaceShip extends Floater implements Space
     }
 } //
 
+//----------------------------------------------------------------------------------------
+//The Bullet class.
+class Bullet extends Floater implements Space
+{
+  public Bullet(SpaceShip theShip)
+  {
+    myColor = color(35,0,255);
+
+    myCenterX = theShip.getX();
+    myCenterY = theShip.getY();
+
+    myPointDirection = theShip.getPointDirection();
+
+    double dRadians = myPointDirection*(Math.PI/180);
+
+    myDirectionX = (5 * Math.cos(dRadians)) + theShip.getDirectionX();
+    myDirectionY = (5 * Math.sin(dRadians)) + theShip.getDirectionY();
+  }
+
+  public void show()
+  {
+    fill(myColor);
+    noStroke();
+
+    ellipse((float)myCenterX,(float)myCenterY,5,5);
+  }
+
+  public void move()
+  {
+    myCenterX += myDirectionX; 
+    myCenterY += myDirectionY;
+  }
+    
+  public void reset() { }
+} //
+
 //-----------------------------------------------------------------------------------------------------
 //The Asteroid class.
 class Asteroid extends Floater implements Space
 {
-  private int rotSpeed;
+  protected int rotSpeed;
   
   public Asteroid()
   {
-    rotSpeed = (int)(Math.random()*5)-2;
+    rotSpeed = (int)(Math.random()*7)-3;
+    if(rotSpeed == 0)
+    {
+      if(Math.random() > 0.5)
+      {
+        rotSpeed = 1;
+      }
+      else
+      {
+        rotSpeed = -1;
+      }
+    }
 
     //Initializes the asteroid's corners
     corners = 8;
@@ -430,18 +537,27 @@ class Asteroid extends Floater implements Space
       myCenterX = 0;
       myCenterY = (int)(Math.random()*height);
     }
-    // myCenterX = (int)(Math.random()*width);
-    // myCenterY = (int)(Math.random()*height);
 
-    myDirectionX = (Math.random()*2)-1;
-    myDirectionY = (Math.random()*2)-1;
+    myDirectionX = (Math.random()*3)-1;
+    myDirectionY = (Math.random()*3)-1;
 
     myPointDirection = (int)(Math.random()*360);
   }
 
   public void reset()
   {
-    myColor = color(210,210,210);
+    rotSpeed = (int)(Math.random()*7)-3;
+    if(rotSpeed == 0)
+    {
+      if(Math.random() > 0.5)
+      {
+        rotSpeed = 1;
+      }
+      else
+      {
+        rotSpeed = -1;
+      }
+    }
 
     if(Math.random()>0.5)
     {
@@ -454,8 +570,8 @@ class Asteroid extends Floater implements Space
       myCenterY = (int)(Math.random()*height);
     }
 
-    myDirectionX = (Math.random()*2)-1;
-    myDirectionY = (Math.random()*2)-1;
+    myDirectionX = (Math.random()*3)-1;
+    myDirectionY = (Math.random()*3)-1;
 
     myPointDirection = (int)(Math.random()*360);
   }
@@ -465,8 +581,57 @@ class Asteroid extends Floater implements Space
     rotate(rotSpeed);
     super.move();
   }
-
 } //
+
+class smallAsteroid extends Asteroid implements Space
+{
+  public smallAsteroid(Asteroid theAsteroid)
+  {
+    rotSpeed = (int)(Math.random()*7)-3;
+    if(rotSpeed == 0)
+    {
+      if(Math.random() > 0.5)
+      {
+        rotSpeed = 1;
+      }
+      else
+      {
+        rotSpeed = -1;
+      }
+    }
+
+    corners = 7;
+
+    xCorners[0] = 6;
+    yCorners[0] = -6;
+
+    xCorners[1] = 0;
+    yCorners[1] = -8;
+
+    xCorners[2] = -6;
+    yCorners[2] = -6;
+
+    xCorners[3] = -8;
+    yCorners[3] = 0;
+
+    xCorners[4] = -2;
+    yCorners[4] = 4;
+
+    xCorners[5] = 4;
+    yCorners[5] = 2;
+
+    xCorners[6] = 2;
+    yCorners[6] = 2;
+
+    myCenterX = theAsteroid.getX();
+    myCenterY = theAsteroid.getY();
+
+    myDirectionX = (Math.random()*3)-1;
+    myDirectionY = (Math.random()*3)-1;
+
+    myPointDirection = (int)(Math.random()*360);
+  }
+}
 
 //----------------------------------------------------------------------------------------
 //An abstract class that contains variables and functions for other classes to inherit.
