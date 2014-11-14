@@ -55,7 +55,7 @@ public void setup()
     }
     else
     {
-      ichi.add(new Asteroid());
+      ichi.add(0,new Asteroid());
     }
   }
 
@@ -78,6 +78,14 @@ public void draw()
   for(int i = 0; i < galaxy.length; i++)
   {
     galaxy[i].showStar();
+  }
+
+  if(ichi.size() == 1 && ichi.get(0) instanceof SpaceShip)
+  {
+    for(int i = 0; i < 10; i++)
+    {
+      ichi.add(0,new Asteroid());
+    }
   }
 
   //Move and show the asteroids.
@@ -177,8 +185,8 @@ public void keyPressed() //Spaceship movement
   if(((SpaceShip)ichi.get(ichi.size()-1)).getCrash() == false)
   {
     //Rotate left/right
-    if(key == 'a' || (key == CODED && keyCode == LEFT)) { ((SpaceShip)ichi.get(ichi.size()-1)).rotate(-5); }
-    if(key == 'd' || (key == CODED && keyCode == RIGHT)) { ((SpaceShip)ichi.get(ichi.size()-1)).rotate(5); }
+    if(key == 'a' || (key == CODED && keyCode == LEFT)) { ((SpaceShip)ichi.get(ichi.size()-1)).rotate(-10); }
+    if(key == 'd' || (key == CODED && keyCode == RIGHT)) { ((SpaceShip)ichi.get(ichi.size()-1)).rotate(10); }
 
     //Accelerate/decelerate
     if(key == 'w' || (key == CODED && keyCode == UP)) { ((SpaceShip)ichi.get(ichi.size()-1)).accelerate(0.1); }
