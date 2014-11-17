@@ -129,18 +129,23 @@ public void draw()
               )
             {
               //20 points for big asteroid, 50 for small.
-              score+=20;
-              // if(ichi.get(i) instanceof Asteroid && !(ichi.get(i) instanceof smallAsteroid))
-              // {
-              //   ichi.add(new smallAsteroid((Asteroid) ichi.get(i)) );
+              if(!(ichi.get(i) instanceof smallAsteroid))
+              {
+                score+=20;
+                Asteroid exploded = (Asteroid)ichi.get(i);
 
-              //   ichi.add(new smallAsteroid((Asteroid) ichi.get(i+1)) );
 
-              //   ichi.remove(i+2);
-              // }
-              // else { ichi.remove(i); }
-              ni.remove(a);
-              ichi.remove(i);          
+                ichi.add(i, new smallAsteroid((Asteroid)exploded) );
+                ichi.add(i+1, new smallAsteroid((Asteroid)exploded) );
+
+                ichi.remove(i+2);
+              }
+              else
+              {
+                score+=50;
+                ichi.remove(i);
+              }
+              ni.remove(a);       
             }
           }
         }
@@ -180,6 +185,7 @@ public void draw()
     fill(textColor);
     textSize(14);
     text("Time survived so far: " + ((int)((timeSurvived/60)*10))/10.0f + "s",400,590);
+    text("Score: " + score,15,590);
 
     timeSurvived+=1.0f;
   }
@@ -219,7 +225,7 @@ public void keyPressed() //Spaceship movement
       sharkKnight.setY((int)(Math.random()*height));
     }
 
-    if(key == ' ' )
+    if(key == ' ')
     {
       ni.add(new Bullet(sharkKnight));
     }
@@ -243,7 +249,7 @@ public void mousePressed() //ONLY for New Game
         {
           ichi.get(i).reset();
         }
-        sharkKnight.reset();
+        sharkKnight.reset(       );
         timeSurvived = 0.0f;
 
         int resetAsteroids = 10-ichi.size();
@@ -648,12 +654,12 @@ class smallAsteroid extends Asteroid implements Space
     myCenterX = theAsteroid.getX();
     myCenterY = theAsteroid.getY();
 
-    myDirectionX = (Math.random()*3)-1;
-    myDirectionY = (Math.random()*3)-1;
+    myDirectionX = (Math.random()*5)-2;
+    myDirectionY = (Math.random()*5)-2;
 
     myPointDirection = (int)(Math.random()*360);
   }
-}
+} //
 
 //----------------------------------------------------------------------------------------
 //An abstract class that contains variables and functions for other classes to inherit.
