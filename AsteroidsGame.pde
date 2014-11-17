@@ -1,5 +1,4 @@
-//import java.util.*;
-
+private SpaceShip sharkKnight;
 private Star [] galaxy;
 private ArrayList <Space> ichi;
 private ArrayList <Bullet> ni;
@@ -47,16 +46,11 @@ public void setup()
   //This is why its number is size-1.
   ichi = new ArrayList <Space>();
 
-  for(int s = 0; s < 11; s++)
+  sharkKnight = new SpaceShip();
+
+  for(int s = 0; s < 10; s++)
   {
-    if(s == 11-1)
-    {
-      ichi.add(new SpaceShip());
-    }
-    else
-    {
-      ichi.add(0,new Asteroid());
-    }
+    ichi.add(0,new Asteroid());
   }
 
   //Separate ArrayList for Bullets.
@@ -80,60 +74,66 @@ public void draw()
     galaxy[i].showStar();
   }
 
-  if(ichi.size() == 1 && ichi.get(0) instanceof SpaceShip)
+  if(ichi.size() == 0)
   {
     for(int i = 0; i < 10; i++)
     {
-      ichi.add(0,new Asteroid());
+      ichi.add(new Asteroid());
     }
   }
-
-  //Move and show the asteroids.
-  //Crash the ship if the asteroid is less than 25 units away from the ship.
-  for(int i = 0; i < ichi.size()-1; i++)
-  {
-    ichi.get(i).move();
-    ichi.get(i).show();
-
-    if(dist(
-      ichi.get(i).getX(),ichi.get(i).getY(),
-      ichi.get(ichi.size()-1).getX(),ichi.get(ichi.size()-1).getY()
-           ) < 25
-      )
+  else {
+    //Move and show the asteroids.
+    //Crash the ship if the asteroid is less than 25 units away from the ship.
+    for(int i = 0; i < ichi.size(); i++)
     {
-      ((SpaceShip)ichi.get(ichi.size()-1)).setCrash(true);
-    }
-
-    for(int a = 0; a < ni.size(); a++)
-    {
-      //Remove an asteroid if the bullet is close enough ("hits").
-      //Remove the bullet as well.
-      if(dist(
-      ichi.get(i).getX(),ichi.get(i).getY(),
-      ni.get(a).getX(),ni.get(a).getY()
-             ) < 25
-        )
+      if( i != ichi.size() )
       {
-        //20 points for big asteroid, 50 for small.
-        score+=20;
-        // if(ichi.get(i) instanceof Asteroid && !(ichi.get(i) instanceof smallAsteroid))
-        // {
-        //   ichi.add(new smallAsteroid((Asteroid) ichi.get(i)) );
+        ichi.get(i).move();
+        ichi.get(i).show();
 
-        //   ichi.add(new smallAsteroid((Asteroid) ichi.get(i+1)) );
+        if(dist(
+          ichi.get(i).getX(),ichi.get(i).getY(),
+          sharkKnight.getX(),sharkKnight.getY()
+               ) < 25
+          )
+        {
+          sharkKnight.setCrash(true);
+        }
 
-        //   ichi.remove(i+2);
-        // }
-        // else { ichi.remove(i); }
-        ichi.remove(i);
-        ni.remove(a);
+        for(int a = 0; a < ni.size(); a++)
+        {
+          //Remove an asteroid if the bullet is close enough ("hits").
+          //Remove the bullet as well.
+          if( i != ichi.size() ) 
+          {
+            if(dist(
+            ichi.get(i).getX(),ichi.get(i).getY(),
+            ni.get(a).getX(),ni.get(a).getY()
+                   ) < 25
+              )
+            {
+              //20 points for big asteroid, 50 for small.
+              score+=20;
+              // if(ichi.get(i) instanceof Asteroid && !(ichi.get(i) instanceof smallAsteroid))
+              // {
+              //   ichi.add(new smallAsteroid((Asteroid) ichi.get(i)) );
 
+              //   ichi.add(new smallAsteroid((Asteroid) ichi.get(i+1)) );
+
+              //   ichi.remove(i+2);
+              // }
+              // else { ichi.remove(i); }
+              ni.remove(a);
+              ichi.remove(i);          
+            }
+          }
+        }
       }
     }
 
   }
   
-  if(((SpaceShip)ichi.get(ichi.size()-1)).getCrash() == false)
+  if(sharkKnight.getCrash() == false)
   {
     for(int a = 0; a < ni.size(); a++)
     {
@@ -154,13 +154,12 @@ public void draw()
   }
 
   //Move and show the SpaceShip.
-  ichi.get(ichi.size()-1).move();
-  ichi.get(ichi.size()-1).show();
+  sharkKnight.move();
+  sharkKnight.show();
   
-
   //If the player has not crashed:
   //Display how long the player has survived in seconds.
-  if( ((SpaceShip)ichi.get(ichi.size()-1)).getCrash() == false)
+  if(sharkKnight.getCrash() == false)
   {
     fill(textColor);
     textSize(14);
@@ -170,7 +169,7 @@ public void draw()
   }
 
   //Once the "New Game?" screen turns up, display how long the player survived.
-  else if( ((SpaceShip)ichi.get(ichi.size()-1)).getGame() == true)
+  else if(sharkKnight.getGame() == true)
   {
     finishedTime = ((int)((timeSurvived/60)*10))/10.0;
     fill(textColor);
@@ -182,44 +181,42 @@ public void draw()
 
 public void keyPressed() //Spaceship movement
 {
-  if(((SpaceShip)ichi.get(ichi.size()-1)).getCrash() == false)
+  if(sharkKnight.getCrash() == false)
   {
     //Rotate left/right
-    if(key == 'a' || (key == CODED && keyCode == LEFT)) { ((SpaceShip)ichi.get(ichi.size()-1)).rotate(-10); }
-    if(key == 'd' || (key == CODED && keyCode == RIGHT)) { ((SpaceShip)ichi.get(ichi.size()-1)).rotate(10); }
+    if(key == 'a' || (key == CODED && keyCode == LEFT)) { sharkKnight.rotate(-10); }
+    if(key == 'd' || (key == CODED && keyCode == RIGHT)) { sharkKnight.rotate(10); }
 
     //Accelerate/decelerate
-    if(key == 'w' || (key == CODED && keyCode == UP)) { ((SpaceShip)ichi.get(ichi.size()-1)).accelerate(0.1); }
-    if(key == 's' || (key == CODED && keyCode == DOWN)) { ((SpaceShip)ichi.get(ichi.size()-1)).accelerate(-0.1); }
+    if(key == 'w' || (key == CODED && keyCode == UP)) { sharkKnight.accelerate(0.1); }
+    if(key == 's' || (key == CODED && keyCode == DOWN)) { sharkKnight.accelerate(-0.1); }
 
     //Hyperspace (no animation applicable)
     if(key == 'q')
     {
-      ((SpaceShip)ichi.get(ichi.size()-1)).setPointDirection((int)(Math.random()*360));
+      sharkKnight.setPointDirection((int)(Math.random()*360));
 
-      ((SpaceShip)ichi.get(ichi.size()-1)).setDirectionX(0);
-      ((SpaceShip)ichi.get(ichi.size()-1)).setDirectionY(0);
+      sharkKnight.setDirectionX(0);
+      sharkKnight.setDirectionY(0);
 
-      ((SpaceShip)ichi.get(ichi.size()-1)).setX((int)(Math.random()*width));
-      ((SpaceShip)ichi.get(ichi.size()-1)).setY((int)(Math.random()*height));
+      sharkKnight.setX((int)(Math.random()*width));
+      sharkKnight.setY((int)(Math.random()*height));
     }
 
     if(key == ' ' )
     {
-      ni.add(new Bullet( (SpaceShip)ichi.get(ichi.size()-1)));
+      ni.add(new Bullet(sharkKnight));
     }
   }
 
-  // if(key == 'f')
-  // {
-  //   timeSurvived+=60;
-  // }
+  // if(key == 'f') { timeSurvived+=60; }
+  // if(key == 'r') { score+=10; }
 }
 
 public void mousePressed() //ONLY for New Game
 {
   //ONLY run this code if the player has crashed and the "New Game?" message has appeared.
-  if(((SpaceShip)ichi.get(ichi.size()-1)).getGame() == true)
+  if(sharkKnight.getGame() == true)
   {
     if(mouseY > 325 && mouseY < 350)
     {
@@ -230,9 +227,10 @@ public void mousePressed() //ONLY for New Game
         {
           ichi.get(i).reset();
         }
+        sharkKnight.reset(       );
         timeSurvived = 0.0;
 
-        int resetAsteroids = 11-ichi.size()-1;
+        int resetAsteroids = 10-ichi.size();
         for(int i = 0; i < resetAsteroids; i++)
         {
           ichi.add(new Asteroid());
@@ -243,7 +241,7 @@ public void mousePressed() //ONLY for New Game
       if(mouseX > 340 && mouseX < 390)
       {
         background(0);
-        ((SpaceShip)ichi.get(ichi.size()-1)).setGame(false);
+        sharkKnight.setGame(false);
         noLoop();
       }
     }
