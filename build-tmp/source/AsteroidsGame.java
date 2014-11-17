@@ -245,11 +245,20 @@ public void mousePressed() //ONLY for New Game
       //The player clicks on "Yes". Code is run to "reset" the game to its initial state.
       if(mouseX > 215 && mouseX < 270)
       {
-        for(int i = 0; i < ichi.size(); i++)
+        int checkSize = ichi.size();
+        for(int i = 0; i < checkSize; i++)
         {
-          ichi.get(i).reset();
+          ichi.remove(0);
+        }        
+        for(int i = 0; i < 10; i++)
+        {
+          ichi.add(new Asteroid());
         }
-        sharkKnight.reset(       );
+        // for(int i = 0; i < ichi.size(); i++)
+        // {
+        //   ichi.get(i).reset();
+        // }
+        sharkKnight.reset();
         timeSurvived = 0.0f;
 
         int resetAsteroids = 10-ichi.size();
