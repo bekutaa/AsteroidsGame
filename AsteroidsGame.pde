@@ -33,7 +33,7 @@ interface Space
   public void move();
   public void show();
 
-  public void reset();
+  // public void reset();
 }
 
 public void setup() 
@@ -238,12 +238,17 @@ public void mousePressed() //ONLY for New Game
         {
           ichi.add(new Asteroid());
         }
+        checkSize = ni.size();
+        for(int i = 0; i < checkSize; i++)
+        {
+          ni.remove(0);
+        }
 
         // for(int i = 0; i < ichi.size(); i++)
         // {
         //   ichi.get(i).reset();
         // }
-        
+
         sharkKnight.reset();
         timeSurvived = 0.0;
 

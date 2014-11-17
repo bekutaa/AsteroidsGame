@@ -49,7 +49,7 @@ interface Space
   public void move();
   public void show();
 
-  public void reset();
+  // public void reset();
 }
 
 public void setup() 
@@ -254,10 +254,17 @@ public void mousePressed() //ONLY for New Game
         {
           ichi.add(new Asteroid());
         }
+        checkSize = ni.size();
+        for(int i = 0; i < checkSize; i++)
+        {
+          ni.remove(0);
+        }
+
         // for(int i = 0; i < ichi.size(); i++)
         // {
         //   ichi.get(i).reset();
         // }
+
         sharkKnight.reset();
         timeSurvived = 0.0f;
 
@@ -506,7 +513,7 @@ class Bullet extends Floater implements Space
     myCenterY += myDirectionY;
   }
     
-  public void reset() { }
+  // public void reset() { }
 } //
 
 //-----------------------------------------------------------------------------------------------------
@@ -581,37 +588,37 @@ class Asteroid extends Floater implements Space
     myPointDirection = (int)(Math.random()*360);
   }
 
-  public void reset()
-  {
-    rotSpeed = (int)(Math.random()*7)-3;
-    if(rotSpeed == 0)
-    {
-      if(Math.random() > 0.5f)
-      {
-        rotSpeed = 1;
-      }
-      else
-      {
-        rotSpeed = -1;
-      }
-    }
+  // public void reset()
+  // {
+  //   rotSpeed = (int)(Math.random()*7)-3;
+  //   if(rotSpeed == 0)
+  //   {
+  //     if(Math.random() > 0.5)
+  //     {
+  //       rotSpeed = 1;
+  //     }
+  //     else
+  //     {
+  //       rotSpeed = -1;
+  //     }
+  //   }
 
-    if(Math.random()>0.5f)
-    {
-      myCenterX = (int)(Math.random()*width);
-      myCenterY = 0;
-    }
-    else
-    {
-      myCenterX = 0;
-      myCenterY = (int)(Math.random()*height);
-    }
+  //   if(Math.random()>0.5)
+  //   {
+  //     myCenterX = (int)(Math.random()*width);
+  //     myCenterY = 0;
+  //   }
+  //   else
+  //   {
+  //     myCenterX = 0;
+  //     myCenterY = (int)(Math.random()*height);
+  //   }
 
-    myDirectionX = (Math.random()*3)-1;
-    myDirectionY = (Math.random()*3)-1;
+  //   myDirectionX = (Math.random()*3)-1;
+  //   myDirectionY = (Math.random()*3)-1;
 
-    myPointDirection = (int)(Math.random()*360);
-  }
+  //   myPointDirection = (int)(Math.random()*360);
+  // }
 
   public void move()
   {
@@ -701,7 +708,7 @@ abstract class Floater //Do NOT modify the Floater class! Make changes in the Sp
   public double getPointDirection() { return myPointDirection; }
 
   //Reset essentially just runs the constructor again to "reset" the game.
-  abstract public void reset();
+  // abstract public void reset();
 
   //Accelerates the floater in the direction it is pointing (myPointDirection)
   public void accelerate (double dAmount)
