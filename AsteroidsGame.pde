@@ -205,7 +205,7 @@ public void draw()
     text("You scored " + score + " points",195,210);
   }
 
-  System.out.println(ichi.size());
+//  System.out.println(ichi.size());
 }
 
 public void keyPressed() //Spaceship movement
