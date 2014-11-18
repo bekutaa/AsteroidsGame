@@ -111,36 +111,66 @@ public void draw()
           //Remove the bullet as well.
           if( i != ichi.size() ) 
           {
-            if(dist(
-            ichi.get(i).getX(),ichi.get(i).getY(),
-            ni.get(a).getX(),ni.get(a).getY()
-                   ) < 25
-              )
+            if(ichi.get(i) instanceof smallAsteroid)
             {
-              //20 points for big asteroid, 50 for small.
-              if(!(ichi.get(i) instanceof smallAsteroid))
+              if(dist(
+              ichi.get(i).getX(),ichi.get(i).getY(),
+              ni.get(a).getX(),ni.get(a).getY()
+                     ) < 15
+                )
+              {
+                score+=50;
+                ichi.remove(i);
+                ni.remove(a);
+              }
+            }
+            else
+            {
+              if(dist(
+              ichi.get(i).getX(),ichi.get(i).getY(),
+              ni.get(a).getX(),ni.get(a).getY()
+                     ) < 25
+                )
               {
                 score+=20;
                 Asteroid exploded = (Asteroid)ichi.get(i);
-
 
                 ichi.add(i, new smallAsteroid((Asteroid)exploded) );
                 ichi.add(i+1, new smallAsteroid((Asteroid)exploded) );
 
                 ichi.remove(i+2);
+                ni.remove(a);
               }
-              else
-              {
-                score+=50;
-                ichi.remove(i);
-              }
-              ni.remove(a);       
             }
+
+            // if(dist(
+            // ichi.get(i).getX(),ichi.get(i).getY(),
+            // ni.get(a).getX(),ni.get(a).getY()
+            //        ) < 25
+            //   )
+            // {
+            //   //20 points for big asteroid, 50 for small.
+            //   if(!(ichi.get(i) instanceof smallAsteroid))
+            //   {
+            //     score+=20;
+            //     Asteroid exploded = (Asteroid)ichi.get(i);
+
+
+            //     ichi.add(i, new smallAsteroid((Asteroid)exploded) );
+            //     ichi.add(i+1, new smallAsteroid((Asteroid)exploded) );
+
+            //     ichi.remove(i+2);
+            //   }
+            //   else
+            //   {
+            //     score+=50;
+            //     ichi.remove(i);
+            //   }
+            //   ni.remove(a);       
           }
         }
       }
     }
-
   }
   
   if(sharkKnight.getCrash() == false)
@@ -452,8 +482,10 @@ class SpaceShip extends Floater implements Space
       //If not collided, draw the ship instead.
       else
       {
-        fill(myColor);  
-        noStroke(); 
+        strokeWeight(1);
+        stroke(myColor);  
+        // fill(0,0,0); 
+        noFill();
               
         //convert degrees to radians for sin and cos         
         double dRadians = myPointDirection*(Math.PI/180);                 
@@ -493,8 +525,10 @@ class Bullet extends Floater implements Space
 
   public void show()
   {
-    fill(myColor);
-    noStroke();
+    // fill(myColor);
+    // noStroke();
+    noFill();
+    stroke(myColor);
 
     ellipse((float)myCenterX,(float)myCenterY,5,5);
   }
@@ -580,43 +614,19 @@ class Asteroid extends Floater implements Space
     myPointDirection = (int)(Math.random()*360);
   }
 
-  // public void reset()
-  // {
-  //   rotSpeed = (int)(Math.random()*7)-3;
-  //   if(rotSpeed == 0)
-  //   {
-  //     if(Math.random() > 0.5)
-  //     {
-  //       rotSpeed = 1;
-  //     }
-  //     else
-  //     {
-  //       rotSpeed = -1;
-  //     }
-  //   }
-
-  //   if(Math.random()>0.5)
-  //   {
-  //     myCenterX = (int)(Math.random()*width);
-  //     myCenterY = 0;
-  //   }
-  //   else
-  //   {
-  //     myCenterX = 0;
-  //     myCenterY = (int)(Math.random()*height);
-  //   }
-
-  //   myDirectionX = (Math.random()*3)-1;
-  //   myDirectionY = (Math.random()*3)-1;
-
-  //   myPointDirection = (int)(Math.random()*360);
-  // }
-
   public void move()
   {
     rotate(rotSpeed);
     super.move();
   }
+
+  // public void show()
+  // {
+  //   noFill();
+  //   stroke(myColor);
+
+  //   super.show();
+  // }
 } //
 
 class smallAsteroid extends Asteroid implements Space
@@ -741,10 +751,10 @@ abstract class Floater //Do NOT modify the Floater class! Make changes in the Sp
     }
   }   
   public void show ()  //Draws the floater at the current position  
-  {
-    fill(myColor);   
+  {    
+    noFill();
+    strokeWeight(1);
     stroke(myColor);
-    
     //convert degrees to radians for sin and cos         
     double dRadians = myPointDirection*(Math.PI/180);                 
     int xRotatedTranslated, yRotatedTranslated;    
