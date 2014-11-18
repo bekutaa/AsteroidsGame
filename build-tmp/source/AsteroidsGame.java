@@ -20,13 +20,15 @@ private ArrayList <Space> ichi;
 private ArrayList <Bullet> ni;
 
 public int score = 0;
+public int bombs = 3;
+public int numberOfAsteroids = 15;
+
+public float timeSurvived = 0.0f;
+public float finishedTime;
 
 public boolean isShield = false;
 
 public int textColor = color(255,0,0);
-
-public float timeSurvived = 0.0f;
-public float finishedTime;
 
 interface Space
 {
@@ -50,8 +52,6 @@ interface Space
 
   public void move();
   public void show();
-
-  // public void reset();
 }
 
 public void setup() 
@@ -66,7 +66,7 @@ public void setup()
 
   sharkKnight = new SpaceShip();
 
-  for(int s = 0; s < 10; s++)
+  for(int s = 0; s < numberOfAsteroids; s++)
   {
     ichi.add(0,new Asteroid());
   }
@@ -94,12 +94,13 @@ public void draw()
 
   if(ichi.size() == 0)
   {
-    for(int i = 0; i < 10; i++)
+    for(int i = 0; i < numberOfAsteroids; i++)
     {
       ichi.add(new Asteroid());
     }
   }
-  else {
+  else
+  {
     //Move and show the asteroids.
     //Crash the ship if the asteroid is less than 25 units away from the ship.
     for(int i = 0; i < ichi.size(); i++)
@@ -125,7 +126,7 @@ public void draw()
         {
           //Remove an asteroid if the bullet is close enough ("hits").
           //Remove the bullet as well.
-          if( i != ichi.size() ) 
+          if( i != ichi.size() )
           {
             if(ichi.get(i) instanceof smallAsteroid)
             {
@@ -158,31 +159,6 @@ public void draw()
                 ni.remove(a);
               }
             }
-
-            // if(dist(
-            // ichi.get(i).getX(),ichi.get(i).getY(),
-            // ni.get(a).getX(),ni.get(a).getY()
-            //        ) < 25
-            //   )
-            // {
-            //   //20 points for big asteroid, 50 for small.
-            //   if(!(ichi.get(i) instanceof smallAsteroid))
-            //   {
-            //     score+=20;
-            //     Asteroid exploded = (Asteroid)ichi.get(i);
-
-
-            //     ichi.add(i, new smallAsteroid((Asteroid)exploded) );
-            //     ichi.add(i+1, new smallAsteroid((Asteroid)exploded) );
-
-            //     ichi.remove(i+2);
-            //   }
-            //   else
-            //   {
-            //     score+=50;
-            //     ichi.remove(i);
-            //   }
-            //   ni.remove(a);       
           }
         }
       }
@@ -214,17 +190,27 @@ public void draw()
   sharkKnight.show();
   
   //If the player has not crashed:
-  //Display how long the player has survived in seconds.
+  //Display how long the player has survived in seconds, the score, and bombs left.
   if(sharkKnight.getCrash() == false)
   {
     fill(textColor);
     textSize(14);
     text("Time survived so far: " + ((int)((timeSurvived/60)*10))/10.0f + "s",400,590);
     text("Score: " + score,15,590);
+    text("Bombs: ", 150,590);
+    
+    //Draw the number of bombs the player has left to use.
+    noFill();
+    strokeWeight(2);
+    stroke(35,0,255);
+    //fill(35,0,255);
+    for(int b = 0; b < bombs; b++)
+    {
+      ellipse(185+25*(b+1), 585, 15,15);
+    }
 
     timeSurvived+=1.0f;
   }
-
   //Once the "New Game?" screen turns up, display how long the player survived.
   else if(sharkKnight.getGame() == true)
   {
@@ -234,11 +220,25 @@ public void draw()
     text("You survived for " + finishedTime + " seconds", 155,235);
     text("You scored " + score + " points",195,210);
   }
+
+  System.out.println(ichi.size());
 }
 
 public void keyPressed() //Spaceship movement
 {
-  if(key == 'v') { isShield = !isShield; }
+  if(key == 'v') { isShield = !isShield; } //invincibility for testing
+
+  if(key == 'x' && bombs > 0)
+  {
+    int checkSize = ichi.size();
+    {
+      for(int i = 0; i < checkSize; i++)
+      {
+        ichi.remove(0);
+      }
+      bombs--;
+    }
+  }
 
   if(sharkKnight.getCrash() == false)
   {
@@ -286,31 +286,28 @@ public void mousePressed() //ONLY for New Game
         for(int i = 0; i < checkSize; i++)
         {
           ichi.remove(0);
-        }        
-        for(int i = 0; i < 10; i++)
+        }
+
+        for(int i = 0; i < numberOfAsteroids; i++)
         {
           ichi.add(new Asteroid());
         }
+        
         checkSize = ni.size();
         for(int i = 0; i < checkSize; i++)
         {
           ni.remove(0);
         }
 
-        // for(int i = 0; i < ichi.size(); i++)
-        // {
-        //   ichi.get(i).reset();
-        // }
+        for(Star temp : galaxy)
+        {
+          temp.reset();
+        }
 
         sharkKnight.reset();
         timeSurvived = 0.0f;
         score = 0;
-
-        int resetAsteroids = 10-ichi.size();
-        for(int i = 0; i < resetAsteroids; i++)
-        {
-          ichi.add(new Asteroid());
-        }
+        bombs = 3;
       }
 
       //The player clicks on "No". The game "shuts down" with a black screen.
@@ -344,6 +341,13 @@ class Star
     noStroke();
     fill(starColor);
     ellipse(starX,starY,starSize,starSize);
+  }
+
+  public void reset()
+  {
+    starX = (int)(Math.random()*width);
+    starY = (int)(Math.random()*height);
+    starSize = (int)(Math.random()*3)+1;
   }
 } //
 
@@ -498,24 +502,7 @@ class SpaceShip extends Floater implements Space
       //If not collided, draw the ship instead.
       else
       {
-        strokeWeight(1);
-        stroke(myColor);  
-        // fill(0,0,0); 
-        noFill();
-              
-        //convert degrees to radians for sin and cos         
-        double dRadians = myPointDirection*(Math.PI/180);                 
-        int xRotatedTranslated, yRotatedTranslated;    
-        beginShape();
-        
-        for(int nI = 0; nI < corners; nI++)    
-        {     
-          //rotate and translate the coordinates of the floater using current direction 
-          xRotatedTranslated = (int)((xCorners[nI]* Math.cos(dRadians)) - (yCorners[nI] * Math.sin(dRadians))+myCenterX);     
-          yRotatedTranslated = (int)((xCorners[nI]* Math.sin(dRadians)) + (yCorners[nI] * Math.cos(dRadians))+myCenterY);      
-          vertex(xRotatedTranslated,yRotatedTranslated);    
-        }   
-        endShape(CLOSE);
+        super.show();
       }
     }
 } //
@@ -554,8 +541,6 @@ class Bullet extends Floater implements Space
     myCenterX += myDirectionX; 
     myCenterY += myDirectionY;
   }
-    
-  // public void reset() { }
 } //
 
 //-----------------------------------------------------------------------------------------------------
@@ -635,14 +620,6 @@ class Asteroid extends Floater implements Space
     rotate(rotSpeed);
     super.move();
   }
-
-  // public void show()
-  // {
-  //   noFill();
-  //   stroke(myColor);
-
-  //   super.show();
-  // }
 } //
 
 class smallAsteroid extends Asteroid implements Space
@@ -709,7 +686,7 @@ abstract class Floater //Do NOT modify the Floater class! Make changes in the Sp
   protected double myPointDirection; //holds current direction the ship is pointing in degrees    
   
   //Edits were made to the Floater class functions with approval from Mr. Simon; namely,
-  //making the setters and getters defined functions, as well as adding a reset function.
+  //making the setters and getters defined functions.
   public void setX(int x) { myCenterX = x; }
   public int getX() { return (int)myCenterX; }
 
@@ -724,9 +701,6 @@ abstract class Floater //Do NOT modify the Floater class! Make changes in the Sp
 
   public void setPointDirection(int degrees) { myPointDirection = degrees; }
   public double getPointDirection() { return myPointDirection; }
-
-  //Reset essentially just runs the constructor again to "reset" the game.
-  // abstract public void reset();
 
   //Accelerates the floater in the direction it is pointing (myPointDirection)
   public void accelerate (double dAmount)
@@ -771,6 +745,7 @@ abstract class Floater //Do NOT modify the Floater class! Make changes in the Sp
     noFill();
     strokeWeight(1);
     stroke(myColor);
+
     //convert degrees to radians for sin and cos         
     double dRadians = myPointDirection*(Math.PI/180);                 
     int xRotatedTranslated, yRotatedTranslated;    
