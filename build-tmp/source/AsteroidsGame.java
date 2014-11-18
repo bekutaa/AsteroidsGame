@@ -21,6 +21,8 @@ private ArrayList <Bullet> ni;
 
 public int score = 0;
 
+public boolean isShield = false;
+
 public int textColor = color(255,0,0);
 
 public float timeSurvived = 0.0f;
@@ -107,13 +109,16 @@ public void draw()
         ichi.get(i).move();
         ichi.get(i).show();
 
-        if(dist(
+        if(!isShield)
+        {
+          if(dist(
           ichi.get(i).getX(),ichi.get(i).getY(),
           sharkKnight.getX(),sharkKnight.getY()
                ) < 25
-          )
-        {
-          sharkKnight.setCrash(true);
+            )
+          {
+            sharkKnight.setCrash(true);
+          }
         }
 
         for(int a = 0; a < ni.size(); a++)
@@ -203,6 +208,8 @@ public void draw()
 
 public void keyPressed() //Spaceship movement
 {
+  if(key == 'v') { isShield = !isShield; }
+
   if(sharkKnight.getCrash() == false)
   {
     //Rotate left/right
@@ -267,6 +274,7 @@ public void mousePressed() //ONLY for New Game
 
         sharkKnight.reset();
         timeSurvived = 0.0f;
+        score = 0;
 
         int resetAsteroids = 10-ichi.size();
         for(int i = 0; i < resetAsteroids; i++)
