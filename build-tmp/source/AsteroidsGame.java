@@ -128,7 +128,7 @@ public void draw()
           //Remove the bullet as well.
           if( i != ichi.size() )
           {
-            if(ichi.get(i) instanceof smallAsteroid)
+            if(((Asteroid)ichi.get(i)).getSmall()) //instanceof smallAsteroid)
             {
               if(dist(
               ichi.get(i).getX(),ichi.get(i).getY(),
@@ -221,7 +221,7 @@ public void draw()
     text("You scored " + score + " points",195,210);
   }
 
-  System.out.println(ichi.size());
+//  System.out.println(ichi.size());
 }
 
 public void keyPressed() //Spaceship movement
@@ -548,6 +548,7 @@ class Bullet extends Floater implements Space
 class Asteroid extends Floater implements Space
 {
   protected int rotSpeed;
+  protected boolean isSmall;
   
   public Asteroid()
   {
@@ -613,7 +614,11 @@ class Asteroid extends Floater implements Space
     myDirectionY = (Math.random()*3)-1;
 
     myPointDirection = (int)(Math.random()*360);
+
+    isSmall = false;
   }
+
+  public boolean getSmall() { return isSmall; }
 
   public void move()
   {
@@ -669,6 +674,8 @@ class smallAsteroid extends Asteroid implements Space
     myDirectionY = (Math.random()*5)-2;
 
     myPointDirection = (int)(Math.random()*360);
+
+    isSmall = true;
   }
 } //
 
