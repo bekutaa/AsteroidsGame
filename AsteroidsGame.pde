@@ -4,13 +4,15 @@ private ArrayList <Space> ichi;
 private ArrayList <Bullet> ni;
 
 public int score = 0;
+public int finalScore;
 public int bombs = 3;
-public int numberOfAsteroids = 15;
+public int numberOfAsteroids = 200;
 
 public float timeSurvived = 0.0;
 public float finishedTime;
 
-public boolean isShield = false;
+public boolean fullEnergy = true;
+public boolean isShield = true;
 
 public int textColor = color(255,0,0);
 
@@ -43,9 +45,8 @@ public void setup()
   size(600,600);
   background(0);
 
-  //This is an ArrayList for all floaters. In it are asteroids and only one SpaceShip;
-  //this spaceship is drawn last on top of everything else.
-  //This is why its number is size-1.
+  //This is an ArrayList for all floaters. In it are the
+  //two different sizes of Asteroids.
   ichi = new ArrayList <Space>();
 
   sharkKnight = new SpaceShip();
@@ -71,11 +72,12 @@ public void draw()
   background(0);
 
   //Draw the stars in the background.
-  for(int i = 0; i < galaxy.length; i++)
+  for(Star tempStar : galaxy)
   {
-    galaxy[i].showStar();
+    tempStar.showStar();
   }
 
+  //Recreate all Asteroids once all have been destroyed.
   if(ichi.size() == 0)
   {
     for(int i = 0; i < numberOfAsteroids; i++)
@@ -100,9 +102,10 @@ public void draw()
           ichi.get(i).getX(),ichi.get(i).getY(),
           sharkKnight.getX(),sharkKnight.getY()
                ) < 25
-            )
+             && sharkKnight.getCrash() == false)
           {
             sharkKnight.setCrash(true);
+            finalScore = score;
           }
         }
 
@@ -112,12 +115,12 @@ public void draw()
           //Remove the bullet as well.
           if( i != ichi.size() )
           {
-            if(((Asteroid)ichi.get(i)).getSmall()) //instanceof smallAsteroid)
+            if(((Asteroid)ichi.get(i)).getSmall())
             {
               if(dist(
               ichi.get(i).getX(),ichi.get(i).getY(),
               ni.get(a).getX(),ni.get(a).getY()
-                     ) < 15
+                     ) < 11
                 )
               {
                 score+=50;
@@ -169,9 +172,15 @@ public void draw()
     }
   }
 
+  //Energy for sprayshots replenishes slowly over time.
+  if(sharkKnight.getEnergy() < 100.0) { sharkKnight.setEnergy(sharkKnight.getEnergy()+((float)1.0/20.0)); }
+  if(sharkKnight.getEnergy() > 100.0 || fullEnergy) { sharkKnight.setEnergy(100); }
+
   //Move and show the SpaceShip.
   sharkKnight.move();
   sharkKnight.show();
+
+//  System.out.println(sharkKnight.getEnergy());
   
   //If the player has not crashed:
   //Display how long the player has survived in seconds, the score, and bombs left.
@@ -179,20 +188,21 @@ public void draw()
   {
     fill(textColor);
     textSize(14);
-    text("Time survived so far: " + ((int)((timeSurvived/60)*10))/10.0 + "s",400,590);
+    text("Time survived: " + ((int)((timeSurvived/60)*10))/10.0 + "s",445,590);
     text("Score: " + score,15,590);
-    text("Bombs: ", 150,590);
+    text("Bombs: ", 135,590);
+    text("Energy: ",270,590);
+
+    
+    noStroke();
+    //Draw energy bar.
+    fill(100,100,255);
+    rect(325,580,100,10);
+    fill(35,0,255);
+    if(sharkKnight.getEnergy() >= 0) { rect(325,580,sharkKnight.getEnergy(),10); }
     
     //Draw the number of bombs the player has left to use.
-    noFill();
-    strokeWeight(2);
-    stroke(35,0,255);
-    //fill(35,0,255);
-    for(int b = 0; b < bombs; b++)
-    {
-      ellipse(185+25*(b+1), 585, 15,15);
-    }
-
+    for(int b = 0; b < bombs; b++) { ellipse(180+15*(b+1), 585, 10,10); }
     timeSurvived+=1.0;
   }
   //Once the "New Game?" screen turns up, display how long the player survived.
@@ -202,24 +212,26 @@ public void draw()
     fill(textColor);
     textSize(20);
     text("You survived for " + finishedTime + " seconds", 155,235);
-    text("You scored " + score + " points",195,210);
+    text("You scored " + finalScore + " points",195,210);
   }
 
-//  System.out.println(ichi.size());
 }
 
 public void keyPressed() //Spaceship movement
 {
+  //Cheats
   if(key == 'v') { isShield = !isShield; } //invincibility for testing
+  if(key == 'z') { sharkKnight.setEnergy(100); }
+  if(key == 'e') { fullEnergy = !fullEnergy; }
+  if(key == 'r') { score+=100; }
+  if(key == 'f') { bombs = 3; }
 
+  //Activate bombs.
   if(key == 'x' && bombs > 0)
   {
     int checkSize = ichi.size();
     {
-      for(int i = 0; i < checkSize; i++)
-      {
-        ichi.remove(0);
-      }
+      for(int i = 0; i < checkSize; i++) { ichi.remove(0); }
       bombs--;
     }
   }
@@ -235,9 +247,11 @@ public void keyPressed() //Spaceship movement
     if(key == 's' || (key == CODED && keyCode == DOWN)) { sharkKnight.accelerate(-0.1); }
 
     //Hyperspace (no animation applicable)
-    if(key == 'q')
+    if(key == 'q' && sharkKnight.getEnergy() > 7)
     {
-      sharkKnight.setPointDirection((int)(Math.random()*360));
+      sharkKnight.setEnergy(sharkKnight.getEnergy()-7.0);
+
+      sharkKnight.setPointDirection(((int)(Math.random()*37))*10);
 
       sharkKnight.setDirectionX(0);
       sharkKnight.setDirectionY(0);
@@ -246,14 +260,19 @@ public void keyPressed() //Spaceship movement
       sharkKnight.setY((int)(Math.random()*height));
     }
 
-    if(key == ' ')
+    if(key == ' ') { ni.add(new Bullet(sharkKnight)); }
+    
+    //Sprayshots cost energy to fire.
+    if(key == 'c' && sharkKnight.getEnergy() > 4)
     {
-      ni.add(new Bullet(sharkKnight));
+      sharkKnight.setEnergy(sharkKnight.getEnergy()-4.0);
+      for(int i = -4; i < 5; i++)
+      {
+        ni.add(new Bullet(sharkKnight));
+        ni.get(ni.size()-1).sprayShoot(5*i);
+      }        
     }
   }
-
-  // if(key == 'f') { timeSurvived+=60; }
-  // if(key == 'r') { score+=10; }
 }
 
 public void mousePressed() //ONLY for New Game
@@ -267,21 +286,12 @@ public void mousePressed() //ONLY for New Game
       if(mouseX > 215 && mouseX < 270)
       {
         int checkSize = ichi.size();
-        for(int i = 0; i < checkSize; i++)
-        {
-          ichi.remove(0);
-        }
+        for(int i = 0; i < checkSize; i++) { ichi.remove(0); }
 
-        for(int i = 0; i < numberOfAsteroids; i++)
-        {
-          ichi.add(new Asteroid());
-        }
+        for(int i = 0; i < numberOfAsteroids; i++) { ichi.add(new Asteroid()); }
         
         checkSize = ni.size();
-        for(int i = 0; i < checkSize; i++)
-        {
-          ni.remove(0);
-        }
+        for(int i = 0; i < checkSize; i++) { ni.remove(0); }
 
         for(Star temp : galaxy)
         {
@@ -290,6 +300,7 @@ public void mousePressed() //ONLY for New Game
 
         sharkKnight.reset();
         timeSurvived = 0.0;
+        sharkKnight.setEnergy(100);
         score = 0;
         bombs = 3;
       }
@@ -343,6 +354,7 @@ class SpaceShip extends Floater implements Space
     private boolean newGame;
     private float explodeRange;
     private int timeCounter;
+    private float sprayEnergy;
 
     public SpaceShip()
     {
@@ -398,6 +410,8 @@ class SpaceShip extends Floater implements Space
         //newgame stuff
         timeCounter = 0;
         newGame = false;
+
+        sprayEnergy = 100.0;
     }
 
     //Setters and getters for the crash "function".
@@ -407,6 +421,10 @@ class SpaceShip extends Floater implements Space
     //Setters and getters for prepping for a new game.
     public void setGame(boolean game) { newGame = game; }
     public boolean getGame() { return newGame; }
+
+    //Setters + getters for sprayshots.
+    public void setEnergy(float newEnergy) { sprayEnergy = newEnergy; }
+    public float getEnergy() { return sprayEnergy; }
 
     //Resets the spaceship to its initial state for a new game.
     public void reset()
@@ -524,6 +542,16 @@ class Bullet extends Floater implements Space
   {
     myCenterX += myDirectionX; 
     myCenterY += myDirectionY;
+  }
+
+  public void sprayShoot(float newPoint)
+  {
+    myPointDirection = newPoint + myPointDirection;
+
+    double dRadians = myPointDirection*(Math.PI/180);
+
+    myDirectionX = (5 * Math.cos(dRadians)) + myDirectionX;
+    myDirectionY = (5 * Math.sin(dRadians)) + myDirectionY;
   }
 } //
 
