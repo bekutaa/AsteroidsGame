@@ -6,13 +6,12 @@ private ArrayList <Bullet> ni;
 public int score = 0;
 public int finalScore;
 public int bombs = 3;
-public int numberOfAsteroids = 200;
+public int numberOfAsteroids = 20;
 
 public float timeSurvived = 0.0;
 public float finishedTime;
 
-public boolean fullEnergy = true;
-public boolean isShield = true;
+public boolean isShield = false;
 
 public int textColor = color(255,0,0);
 
@@ -174,13 +173,11 @@ public void draw()
 
   //Energy for sprayshots replenishes slowly over time.
   if(sharkKnight.getEnergy() < 100.0) { sharkKnight.setEnergy(sharkKnight.getEnergy()+((float)1.0/20.0)); }
-  if(sharkKnight.getEnergy() > 100.0 || fullEnergy) { sharkKnight.setEnergy(100); }
+  if(sharkKnight.getEnergy() > 100.0) { sharkKnight.setEnergy(100); }
 
   //Move and show the SpaceShip.
   sharkKnight.move();
   sharkKnight.show();
-
-//  System.out.println(sharkKnight.getEnergy());
   
   //If the player has not crashed:
   //Display how long the player has survived in seconds, the score, and bombs left.
@@ -220,11 +217,9 @@ public void draw()
 public void keyPressed() //Spaceship movement
 {
   //Cheats
-  if(key == 'v') { isShield = !isShield; } //invincibility for testing
-  if(key == 'z') { sharkKnight.setEnergy(100); }
-  if(key == 'e') { fullEnergy = !fullEnergy; }
-  if(key == 'r') { score+=100; }
-  if(key == 'f') { bombs = 3; }
+  // if(key == 'v') { isShield = !isShield; } //invincibility for testing
+  // if(key == 'z') { sharkKnight.setEnergy(100); }
+  // if(key == 'f') { bombs = 3; }
 
   //Activate bombs.
   if(key == 'x' && bombs > 0)
@@ -266,7 +261,7 @@ public void keyPressed() //Spaceship movement
     if(key == 'c' && sharkKnight.getEnergy() > 4)
     {
       sharkKnight.setEnergy(sharkKnight.getEnergy()-4.0);
-      for(int i = -4; i < 5; i++)
+      for(int i = -6; i < 7; i++)
       {
         ni.add(new Bullet(sharkKnight));
         ni.get(ni.size()-1).sprayShoot(5*i);
@@ -530,8 +525,6 @@ class Bullet extends Floater implements Space
 
   public void show()
   {
-    // fill(myColor);
-    // noStroke();
     noFill();
     stroke(myColor);
 
