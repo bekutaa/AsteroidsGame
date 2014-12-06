@@ -18,8 +18,8 @@ public float timeSurvived = 0.0;
 public float finishedTime;
 
 public boolean isShield = true;
-public boolean shieldFlash = true;
-public boolean fullEnergy = true;
+//public boolean shieldFlash = true;
+//public boolean fullEnergy = true;
 
 public int textColor = color(255,0,0);
 
@@ -286,27 +286,28 @@ public void draw()
     }
   }
 
-  //Energy for sprayshots replenishes slowly over time.
-  if(sharkKnight.getEnergy() < 100.0) { sharkKnight.setEnergy(sharkKnight.getEnergy()+((float)1.0/20.0)); }
-  if(sharkKnight.getEnergy() > 100.0 || fullEnergy) { sharkKnight.setEnergy(100); }
-
   //Move and show the SpaceShip.
   sharkKnight.move();
 
-  if(isShield)
+  //if(isShield)
   {
     noFill();
     strokeWeight(3);
 
-    if(frames%5==0) { shieldFlash = !shieldFlash; }
-    if(shieldFlash) { stroke(85,116,245); }
-    else { stroke(230,230,230); }
+    //if(frames%5==0) { shieldFlash = !shieldFlash; }
+    //if(shieldFlash) { stroke(85,116,245); }
+    //else { stroke(230,230,230); }
 
+    stroke(85,116,245);
     ellipse(sharkKnight.getX(),sharkKnight.getY(),60,60);
 
     sharkKnight.setEnergy(sharkKnight.getEnergy()-1);
   }
   sharkKnight.show();
+
+  //Energy for sprayshots replenishes slowly over time.
+  if(sharkKnight.getEnergy() < 100.0) { sharkKnight.setEnergy(sharkKnight.getEnergy()+((float)1.0/20.0)); }
+  if(sharkKnight.getEnergy() > 100.0) { sharkKnight.setEnergy(100); }
   
   //If the player has not crashed:
   //Display how long the player has survived in seconds, the score, and bombs left.
@@ -354,7 +355,7 @@ public void keyPressed() //Spaceship movement
   if(key == 'v') { isShield = !isShield; } //invincibility for testing
   //if(key == 'z') { fullEnergy = !fullEnergy; }
   //if(key == 'f') { bombs = 3; }
-  //if(key == 'r' || key == 'e') { san.add(new Alien((SpaceShip) sharkKnight)); }
+  //if(key == 'r') { san.add(new Alien((SpaceShip) sharkKnight)); }
 
   //Activate bombs.
   if(key == 'x' && bombs > 0)
@@ -377,7 +378,7 @@ public void keyPressed() //Spaceship movement
     if(key == 's' || (key == CODED && keyCode == DOWN)) { sharkKnight.accelerate(-0.15); }
 
     //Hyperspace (no animation applicable)
-    if(key == 'q' && sharkKnight.getEnergy() > 5 || key == 'e')
+    if(key == 'q' && sharkKnight.getEnergy() > 5)
     {
       sharkKnight.setEnergy(sharkKnight.getEnergy()-7.0);
 
