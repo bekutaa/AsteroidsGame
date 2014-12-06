@@ -19,7 +19,7 @@ public float finishedTime;
 
 public boolean isShield = false;
 public boolean shieldFlash = true;
-//public boolean fullEnergy = true;
+public boolean fullEnergy = false;
 
 public int textColor = color(255,0,0);
 
