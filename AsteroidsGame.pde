@@ -67,7 +67,6 @@ public void setup()
 
   //Arraylist for Aliens and their bullets.
   san = new ArrayList <Alien>();
-  san.add(new Alien((SpaceShip) sharkKnight));
 
   yon = new ArrayList <AlienBullet>();
 
@@ -358,11 +357,12 @@ public void draw()
 
 public void keyPressed() //Spaceship movement
 {
-  //Cheats
-  if(key == 'v') { isShield = !isShield; } //invincibility for testing
+  //Cheats/bug testing  
   //if(key == 'z') { fullEnergy = !fullEnergy; }
   //if(key == 'f') { bombs = 3; }
   //if(key == 'r') { san.add(new Alien((SpaceShip) sharkKnight)); }
+
+  if(key == 'v') { isShield = !isShield; } //invincibility
 
   //Activate bombs.
   if(key == 'x' && bombs > 0)
@@ -444,12 +444,12 @@ public void mousePressed() //ONLY for New Game
 
         sharkKnight.reset();
 
-        san.add(new Alien((SpaceShip) sharkKnight));    
-
         timeSurvived = 0.0;
         sharkKnight.setEnergy(100);
         score = 0;
         bombs = 3;
+
+        thousands = 1;
       }
 
       //The player clicks on "No". The game "shuts down" with a black screen.
