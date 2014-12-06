@@ -294,14 +294,14 @@ public void draw()
     noFill();
     strokeWeight(3);
 
-    //if(frames%5==0) { shieldFlash = !shieldFlash; }
-    //if(shieldFlash) { stroke(85,116,245); }
-    //else { stroke(230,230,230); }
+    if(frames%4==0) { shieldFlash = !shieldFlash; }
+    if(shieldFlash) { stroke(85,116,245); }
+    else { stroke(230,230,230); }
 
-    stroke(85,116,245);
+    //stroke(85,116,245);
     ellipse(sharkKnight.getX(),sharkKnight.getY(),60,60);
 
-    sharkKnight.setEnergy(sharkKnight.getEnergy()-1);
+    sharkKnight.setEnergy(sharkKnight.getEnergy()-0.5);
   }
   sharkKnight.show();
 
