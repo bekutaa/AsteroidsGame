@@ -314,7 +314,7 @@ public void draw()
 
   //Energy for sprayshots replenishes slowly over time.
   if(sharkKnight.getEnergy() < 100.0) { sharkKnight.setEnergy(sharkKnight.getEnergy()+((float)1.0/20.0)); }
-  if(sharkKnight.getEnergy() > 100.0) { sharkKnight.setEnergy(100); }
+  if(sharkKnight.getEnergy() > 100.0 || fullEnergy) { sharkKnight.setEnergy(100); }
   
   //If the player has not crashed:
   //Display how long the player has survived in seconds, the score, and bombs left.
