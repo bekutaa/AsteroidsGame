@@ -17,8 +17,8 @@ private int thousands = 1;
 public float timeSurvived = 0.0;
 public float finishedTime;
 
-public boolean isShield = true;
-//public boolean shieldFlash = true;
+public boolean isShield = false;
+public boolean shieldFlash = true;
 //public boolean fullEnergy = true;
 
 public int textColor = color(255,0,0);
@@ -289,19 +289,26 @@ public void draw()
   //Move and show the SpaceShip.
   sharkKnight.move();
 
-  //if(isShield)
+  if(isShield && sharkKnight.getCrash() == false)
   {
-    noFill();
-    strokeWeight(3);
+    if(sharkKnight.getEnergy() <= 0)
+    {
+      isShield = false;
+    }
+    else
+    {
+      noFill();
+      strokeWeight(3);
 
-    if(frames%4==0) { shieldFlash = !shieldFlash; }
-    if(shieldFlash) { stroke(85,116,245); }
-    else { stroke(230,230,230); }
+      if(frames%4==0) { shieldFlash = !shieldFlash; }
+      if(shieldFlash) { stroke(85,116,245); }
+      else { stroke(230,230,230); }
 
-    //stroke(85,116,245);
-    ellipse(sharkKnight.getX(),sharkKnight.getY(),60,60);
+      //stroke(85,116,245);
+      ellipse(sharkKnight.getX(),sharkKnight.getY(),60,60);
 
-    sharkKnight.setEnergy(sharkKnight.getEnergy()-0.5);
+      sharkKnight.setEnergy(sharkKnight.getEnergy()-0.5);
+    }
   }
   sharkKnight.show();
 
